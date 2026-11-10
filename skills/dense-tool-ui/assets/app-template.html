@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App shell template (dense-tool-ui)</title>
+<script>try{const t=localStorage.getItem("app-theme");if(t)document.documentElement.dataset.theme=t;else if(matchMedia("(prefers-color-scheme: light)").matches)document.documentElement.dataset.theme="light"}catch(e){}</script>
+<style>
+/* Tokens measured from a dense tool UI (Nov 2026). Change --accent-h and --font for your brand. */
+:root{
+  --accent-h:250; --accent:lch(48 59 var(--accent-h)); --accent-ink:lch(100 5 var(--accent-h));
+  --font:system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --sidebar-w:244px; --hdr-h:52px; --row-h:44px; --ctl-h:28px;
+  --r-ctl:8px; --r-panel:12px; --r-pill:9999px;
+  --ease:cubic-bezier(.23,1,.32,1);
+}
+[data-theme=dark]{color-scheme:dark;
+  --bg-app:lch(2.6 .4 272);        /* outer background + sidebar */
+  --bg-panel:lch(5.5 .4 272);      /* content panel */
+  --bg-2:lch(9.2 .85 272);         /* cards, group headers */
+  --bg-3:lch(12.7 .85 272);        /* popover, menu */
+  --bg-ctl:lch(17.6 1.6 272);      /* chips, secondary buttons */
+  --bg-hover:lch(16.7 1 272);      /* selected row/tab */
+  --line:lch(9.8 1.5 272); --line-2:lch(14.2 1.5 272); --line-3:lch(21.4 1.9 272);
+  --ink:lch(100 0 272); --ink-2:lch(90.5 1.2 272); --ink-3:lch(61.8 1.2 272); --ink-4:lch(37 1.2 272);
+  --ring:lch(100 0 0 / .048); --drop:lch(0 0 0 / .3);
+}
+[data-theme=light]{color-scheme:light;
+  --bg-app:#efeff0; --bg-panel:#fcfcfd; --bg-2:#fff; --bg-3:#fff; --bg-ctl:#ececee; --bg-hover:#e6e6e9;
+  --line:#e2e2e2; --line-2:#dcdbdd; --line-3:#d0d0d4;
+  --ink:#1b1c20; --ink-2:#3c4149; --ink-3:#6f6e77; --ink-4:#a3a2aa;
+  --ring:lch(0 0 0 / .06); --drop:lch(0 0 0 / .08);
+}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{font:13px/1.5 var(--font);background:var(--bg-app);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1px solid var(--accent);outline-offset:1px}
+::selection{background:color-mix(in srgb,var(--accent) 40%,transparent)}
+kbd{font:500 11px/1 var(--font);min-width:18px;height:18px;padding:0 4px;display:inline-grid;place-items:center;border-radius:4px;background:var(--bg-ctl);color:var(--ink-3)}
+
+/* Shell: bare sidebar on the app background, nested content panel (8px inset, radius 12, 1px border) */
+.app{display:grid;grid-template-columns:var(--sidebar-w) minmax(0,1fr);height:100%}
+.side{display:flex;flex-direction:column;gap:2px;padding:12px 12px 8px;overflow:auto}
+.ws{display:flex;align-items:center;gap:8px;height:var(--ctl-h);padding:0 4px;font-weight:600}
+.ws i{width:22px;height:22px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:600 10px var(--font);font-style:normal}
+.ws .sp{flex:1}
+.nav{display:flex;align-items:center;gap:8px;height:var(--ctl-h);padding:0 9px 0 8px;border-radius:var(--r-ctl);color:var(--ink-3);font-weight:500;text-decoration:none}
+.nav:hover{background:var(--bg-hover);color:var(--ink-2)}
+.nav[aria-current]{background:var(--bg-hover);color:var(--ink)}
+.nav .n{margin-left:auto;font-size:11px;color:var(--ink-4)}
+.sec{margin:14px 0 2px;padding:0 9px;font-size:12px;font-weight:500;color:var(--ink-4)}
+.ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.5}
+
+.panel{margin:8px 8px 8px 0;background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r-panel);box-shadow:var(--drop) 0 .5px 1px 1px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.hdr{height:var(--hdr-h);flex:none;display:flex;align-items:center;gap:8px;padding:0 12px 0 18px;border-bottom:1px solid var(--line)}
+.crumb{display:flex;gap:6px;align-items:center;font-weight:500;color:var(--ink-2);min-width:0}
+.crumb b{color:var(--ink);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .sp{flex:1}
+.btn{height:var(--ctl-h);padding:0 10px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--ink-3)}
+.btn:hover{background:var(--bg-hover);color:var(--ink)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);box-shadow:var(--drop) 0 .5px 1px 1px}
+.btn.pri:hover{filter:brightness(1.1)}
+.ibtn{width:var(--ctl-h);height:var(--ctl-h);border-radius:var(--r-pill);display:grid;place-items:center;color:var(--ink-3);border:1px solid var(--line-2)}
+.ibtn:hover{color:var(--ink);background:var(--bg-hover)}
+.bar{display:flex;align-items:center;gap:6px;padding:8px 12px 8px 8px}
+.tab{height:var(--ctl-h);padding:0 10px;border-radius:var(--r-pill);font-size:12px;font-weight:500;color:var(--ink-3);border:1px solid var(--line-2)}
+.tab[aria-selected=true]{background:var(--bg-hover);color:var(--ink);border-color:transparent}
+.body{flex:1;overflow:auto;min-height:0}
+
+/* List: bg-2 group headers, 44px rows, no row dividers; hover = background only */
+.grp{display:flex;align-items:center;gap:8px;height:36px;padding:0 20px;margin:0 8px;border-radius:var(--r-ctl);background:var(--bg-2);font-weight:500;position:sticky;top:0;z-index:1}
+.grp .c{color:var(--ink-3)}
+.row{display:flex;align-items:center;gap:10px;height:var(--row-h);padding:0 22px 0 40px;cursor:default}
+.row:hover,.row.sel{background:var(--bg-hover)}
+.row .id{width:52px;flex:none;color:var(--ink-3);font-weight:450;letter-spacing:-.02em}
+.row .t{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .meta{color:var(--ink-3);font-size:12px;white-space:nowrap}
+.chip{height:22px;padding:0 8px 0 6px;border-radius:var(--r-pill);background:var(--bg-ctl);color:var(--ink-3);font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--c,var(--ink-4))}
+.st{width:14px;height:14px;flex:none;border-radius:50%;border:1.5px solid var(--c,var(--ink-3))}
+.st.prog{background:conic-gradient(var(--c) 0 50%,transparent 0)}
+.st.done{background:var(--c)}
+.st.back{border-style:dotted}
+
+/* Board: 340px columns, bg-2 cards, radius 8, ring-shadow border */
+.board{display:flex;gap:12px;padding:4px 12px 12px;height:100%;overflow-x:auto}
+.col{width:340px;flex:none;display:flex;flex-direction:column;gap:6px}
+.col h3{display:flex;align-items:center;gap:8px;height:36px;padding:0 10px;font-size:13px;font-weight:500}
+.col h3 .c{color:var(--ink-3);font-weight:400}
+.card{background:var(--bg-2);border-radius:var(--r-ctl);padding:10px 12px;box-shadow:var(--ring) 0 0 0 1px,var(--drop) 0 .5px 1px 1px;display:grid;gap:8px}
+.card:hover{box-shadow:var(--line-3) 0 0 0 1px,var(--drop) 0 .5px 1px 1px}
+.card .id{color:var(--ink-3);font-size:12px}
+
+/* Issue detail: content left (max ~640), 340px Properties column right */
+.detail{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:100%}
+.doc{padding:44px 48px;max-width:720px;width:100%;margin:0 auto}
+.doc h1{font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.01em}
+.doc .desc{margin-top:14px;font-size:15px;line-height:1.6;color:var(--ink-2)}
+.act{margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+.act h2{font-size:15px;font-weight:600}
+.ev{margin-top:12px;font-size:12px;color:var(--ink-3)}
+.cmt{margin-top:14px;min-height:80px;border-radius:var(--r-panel);background:var(--bg-2);box-shadow:var(--ring) 0 0 0 1px;padding:14px 16px;color:var(--ink-4)}
+.props{padding:36px 24px;border-left:1px solid var(--line);display:grid;gap:4px;align-content:start}
+.props h4{font-size:13px;font-weight:500;color:var(--ink-3);padding:0 8px;margin:14px 0 4px}
+.props h4:first-child{margin-top:0}
+.prop{display:flex;align-items:center;gap:8px;height:var(--ctl-h);padding:0 8px;border-radius:var(--r-ctl);font-weight:500;text-align:left}
+.prop:hover{background:var(--bg-hover)}
+
+/* ⌘K: no-blur scrim, 720px box placed high (~13vh), context chip */
+.scrim{position:fixed;inset:0;background:lch(0 0 0 / .45);display:grid;justify-items:center;align-items:start;padding:13vh 12px 0;z-index:50;animation:fade .14s var(--ease)}
+.cmdk{width:min(720px,100%);background:var(--bg-3);border:1px solid var(--line-3);border-radius:var(--r-panel);box-shadow:lch(0 0 0 / .25) 0 8px 32px;overflow:hidden;animation:pop .16s var(--ease)}
+.cmdk .ctx{margin:12px 14px 0;display:inline-flex}
+.cmdk input{width:100%;height:48px;padding:0 18px;background:none;border:0;outline:0;font:15px var(--font);color:var(--ink);border-bottom:1px solid var(--line-2)}
+.cmdk input::placeholder{color:var(--ink-4)}
+.opts{max-height:360px;overflow:auto;padding:6px}
+.opt{display:flex;align-items:center;gap:12px;height:46px;padding:0 12px;border-radius:var(--r-ctl);font-size:14px;font-weight:500;color:var(--ink-2)}
+.opt[aria-selected=true]{background:var(--bg-hover);color:var(--ink)}
+.opt .k{margin-left:auto;display:flex;gap:4px}
+.cmdk .empty{padding:18px;color:var(--ink-3)}
+
+/* Toasts: bottom-right, stacked, auto-dismiss */
+.toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{width:340px;background:var(--bg-3);border:1px solid var(--line-3);border-radius:var(--r-panel);padding:12px 14px;box-shadow:lch(0 0 0 / .2) 0 4px 24px;animation:pop .18s var(--ease)}
+.toast b{display:block;font-weight:500}
+.toast span{color:var(--ink-3);font-size:12px}
+
+/* Create modal: big title, description, property chips, primary button in footer */
+.modal{width:min(750px,100%);background:var(--bg-3);border:1px solid var(--line-3);border-radius:16px;padding:16px 18px;display:grid;gap:12px;box-shadow:lch(0 0 0 / .25) 0 8px 32px;animation:pop .16s var(--ease)}
+.modal input,.modal textarea{background:none;border:0;outline:0;color:var(--ink);font:600 18px var(--font);resize:none}
+.modal textarea{font:15px/1.6 var(--font);min-height:60px;color:var(--ink-2)}
+.modal .chips{display:flex;gap:6px;flex-wrap:wrap}
+.modal .foot{display:flex;justify-content:flex-end;gap:8px;padding-top:4px}
+
+@keyframes fade{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:scale(.98) translateY(4px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{display:none}
+  .panel{margin:0;border-radius:0;border:0}
+  .detail{grid-template-columns:minmax(0,1fr)}
+  .props{border-left:0;border-top:1px solid var(--line)}
+  .doc{padding:24px 18px}
+  .row{padding:0 14px}
+  .row .meta,.row .chip{display:none}
+  .col{width:82vw}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-inbox" viewBox="0 0 16 16"><path d="M2 9.5 3.6 3h8.8L14 9.5V13H2zM2 9.5h3.5l1 1.5h3l1-1.5H14"/></symbol>
+  <symbol id="i-me" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="1.5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 16 16"><path d="M8 1.8 13.5 5v6L8 14.2 2.5 11V5zM2.5 5 8 8.2 13.5 5M8 8.2v6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 16 16"><path d="m8 2 6 3.2-6 3.2-6-3.2zM2 8.5l6 3.2 6-3.2"/></symbol>
+  <symbol id="i-issue" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" rx="3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 16 16"><path d="M2 5h8M13 5h1M2 11h2M7 11h7"/><circle cx="11.5" cy="5" r="1.5"/><circle cx="5.5" cy="11" r="1.5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side" aria-label="Navigation">
+    <div class="ws"><i>AC</i><span>Acme</span><span class="sp"></span>
+      <button class="ibtn" data-cmdk aria-label="Search (Ctrl K)"><svg class="ico"><use href="#i-search"/></svg></button>
+      <button class="ibtn" data-new aria-label="New issue (C)"><svg class="ico"><use href="#i-plus"/></svg></button>
+    </div>
+    <a class="nav" href="#inbox" data-view="inbox"><svg class="ico"><use href="#i-inbox"/></svg>Inbox<span class="n">2</span></a>
+    <a class="nav" href="#mine" data-view="list"><svg class="ico"><use href="#i-me"/></svg>My issues</a>
+    <div class="sec">Workspace</div>
+    <a class="nav" href="#projects" data-view="list"><svg class="ico"><use href="#i-box"/></svg>Projects</a>
+    <a class="nav" href="#views" data-view="list"><svg class="ico"><use href="#i-layers"/></svg>Views</a>
+    <div class="sec">Your teams</div>
+    <a class="nav" href="#issues" data-view="list" aria-current="page"><svg class="ico"><use href="#i-issue"/></svg>Issues</a>
+  </aside>
+
+  <main class="panel">
+    <header class="hdr">
+      <div class="crumb"><span>Acme</span><span aria-hidden="true">›</span><b id="title">Issues</b></div>
+      <span class="sp"></span>
+      <button class="ibtn" id="themeBtn" aria-label="Toggle light/dark theme"><svg class="ico"><use href="#i-sun"/></svg></button>
+      <button class="btn" data-new><svg class="ico"><use href="#i-plus"/></svg>New issue</button>
+    </header>
+    <div class="bar" role="tablist" id="bar">
+      <button class="tab" role="tab" aria-selected="false">Active</button>
+      <button class="tab" role="tab" aria-selected="false">Backlog</button>
+      <button class="tab" role="tab" aria-selected="true">All issues</button>
+      <span style="flex:1"></span>
+      <button class="ibtn" id="layoutBtn" aria-label="Toggle list/board (Ctrl B)"><svg class="ico"><use href="#i-sliders"/></svg></button>
+    </div>
+    <div class="body" id="body"></div>
+  </main>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+// Sample data (made up). Replace with the project's real data.
+const STATUS={backlog:["Backlog","back","var(--ink-3)"],todo:["Todo","","var(--ink-2)"],prog:["In Progress","prog","#f0bf00"],done:["Done","done","#5e6ad2"]};
+const issues=[
+  {id:"ACM-42",t:"Notification emails are sent twice",s:"prog",l:["Bug","#eb5757"],d:"Nov 12"},
+  {id:"ACM-41",t:"Add retry with backoff to webhook delivery",s:"todo",l:["Backend","#4ea7fc"],d:"Nov 14"},
+  {id:"ACM-40",t:"Usage dashboard by day",s:"todo",l:["Feature","#27a644"],d:"Nov 18"},
+  {id:"ACM-38",t:"Move image uploads to a background job",s:"backlog",l:["Backend","#4ea7fc"],d:""},
+  {id:"ACM-35",t:"Add index on orders.user_id",s:"done",l:["DB","#fc7840"],d:"Nov 3"},
+];
+let layout="list", view="list", sel=0, open=null;
+const $=s=>document.querySelector(s), body=$("#body");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const st=s=>`<span class="st ${STATUS[s][1]}" style="--c:${STATUS[s][2]}" aria-label="${STATUS[s][0]}"></span>`;
+const chip=l=>`<span class="chip"><span class="dot" style="--c:${l[1]}"></span>${esc(l[0])}</span>`;
+
+function render(){
+  $("#bar").hidden=view!=="list";
+  if(view==="detail")return renderDetail();
+  if(view==="inbox"){body.innerHTML=`<div style="display:grid;place-items:center;height:100%;color:var(--ink-3)">No notifications</div>`;return}
+  const groups=Object.keys(STATUS).map(k=>[k,issues.filter(i=>i.s===k)]);
+  if(layout==="board"){
+    body.innerHTML=`<div class="board">${groups.map(([k,g])=>`<section class="col"><h3>${st(k)}${STATUS[k][0]} <span class="c">${g.length}</span></h3>${g.map(i=>`<article class="card" data-open="${i.id}"><span class="id">${i.id}</span><b>${esc(i.t)}</b><div>${chip(i.l)}</div></article>`).join("")}</section>`).join("")}</div>`;
+  }else{
+    let n=0;
+    body.innerHTML=groups.filter(([,g])=>g.length).map(([k,g])=>`<div class="grp">${st(k)}${STATUS[k][0]} <span class="c">${g.length}</span></div>`+g.map(i=>`<div class="row${n++===sel?" sel":""}" data-open="${i.id}"><span class="id">${i.id}</span>${st(i.s)}<span class="t">${esc(i.t)}</span>${chip(i.l)}<span class="meta">${i.d}</span></div>`).join("")).join("");
+  }
+}
+function renderDetail(){
+  const i=issues.find(x=>x.id===open);
+  $("#title").textContent=i.id+"  "+i.t;
+  body.innerHTML=`<div class="detail"><article class="doc"><h1>${esc(i.t)}</h1><p class="desc">Short description of the problem, context and done criteria. Edited inline; there is no Save button.</p>
+  <section class="act"><h2>Activity</h2><p class="ev">You created this issue · just now</p><div class="cmt">Leave a comment…</div></section></article>
+  <aside class="props"><h4>Properties</h4><button class="prop">${st(i.s)}${STATUS[i.s][0]}</button><button class="prop">Set priority</button><button class="prop">Assign</button>
+  <h4>Labels</h4><div style="padding:0 8px">${chip(i.l)}</div><h4>Project</h4><button class="prop">Add to project</button></aside></div>`;
+}
+function go(v,id){view=v;open=id||null;if(v!=="detail")$("#title").textContent=v==="inbox"?"Inbox":"Issues";render()}
+
+// ⌘K: context chip while an issue is open, shortcuts shown on the right
+const CMDS=[["Create new issue",["C"],()=>newIssue()],["Toggle list/board",["Ctrl","B"],()=>toggleLayout()],["Toggle light/dark theme",[],()=>toggleTheme()],["Go to Inbox",["G","I"],()=>go("inbox")],["Go to Issues",["G","A"],()=>go("list")]];
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").toLowerCase();
+function cmdk(){
+  if($(".scrim"))return;
+  const back=document.activeElement, sc=document.createElement("div"); sc.className="scrim";
+  const ctx=open?`<span class="chip ctx">${esc(open)}</span>`:"";
+  sc.innerHTML=`<div class="cmdk" role="dialog" aria-modal="true" aria-label="Command palette">${ctx}<input placeholder="Type a command or search…" aria-controls="opts"><div class="opts" id="opts" role="listbox"></div></div>`;
+  document.body.append(sc); $(".app").inert=true;
+  const inp=sc.querySelector("input"), box=sc.querySelector(".opts"); let k=0, list=[];
+  const draw=()=>{const q=norm(inp.value).split(/\s+/).filter(Boolean);
+    list=CMDS.filter(c=>q.every(w=>norm(c[0]).includes(w))).concat(issues.filter(i=>q.length&&q.every(w=>norm(i.id+" "+i.t).includes(w))).map(i=>[i.id+"  "+i.t,[],()=>go("detail",i.id)]));
+    k=Math.min(k,Math.max(list.length-1,0));
+    box.innerHTML=list.length?list.map((c,j)=>`<div class="opt" role="option" aria-selected="${j===k}" data-j="${j}">${esc(c[0])}<span class="k">${c[1].map(x=>`<kbd>${x}</kbd>`).join("")}</span></div>`).join(""):`<div class="empty">No results</div>`};
+  const close=()=>{sc.remove();$(".app").inert=false;back&&back.focus()};
+  const run=j=>{const c=list[j];close();c&&c[2]()};
+  inp.oninput=()=>{k=0;draw()};
+  sc.onkeydown=e=>{e.stopPropagation();if(e.key==="Escape"||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k")){e.preventDefault();close()}else if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();k=(k+(e.key==="ArrowDown"?1:-1)+list.length)%list.length;draw()}else if(e.key==="Enter"){e.preventDefault();run(k)}};
+  sc.onclick=e=>{const o=e.target.closest(".opt");if(o)run(+o.dataset.j);else if(e.target===sc)close()};
+  draw(); inp.focus();
+}
+function newIssue(){
+  if($(".scrim"))return;
+  const back=document.activeElement, sc=document.createElement("div"); sc.className="scrim";
+  sc.innerHTML=`<form class="modal" role="dialog" aria-modal="true" aria-label="Create issue"><input name="t" placeholder="Issue title" aria-label="Title" required><textarea name="d" placeholder="Add description…" aria-label="Description"></textarea><div class="chips"><span class="chip">${st("backlog")}Backlog</span><span class="chip">Priority</span><span class="chip">Assignee</span><span class="chip">Labels</span></div><div class="foot"><button type="button" class="btn" data-x>Cancel</button><button class="btn pri">Create issue <kbd style="background:transparent;color:inherit">Ctrl ↵</kbd></button></div></form>`;
+  document.body.append(sc); $(".app").inert=true;
+  const f=sc.querySelector("form"), close=()=>{sc.remove();$(".app").inert=false;back&&back.focus()};
+  f.onsubmit=e=>{e.preventDefault();const t=f.t.value.trim();if(!t)return;const id="ACM-"+(43+issues.length-5);issues.unshift({id,t,s:"backlog",l:["Triage","#00b8cc"],d:""});close();render();toast("Issue created",id+" · "+t)};
+  sc.onkeydown=e=>{e.stopPropagation();if(e.key==="Escape")close();if(e.key==="Enter"&&(e.ctrlKey||e.metaKey))f.requestSubmit()};
+  sc.querySelector("[data-x]").onclick=close; f.t.focus();
+}
+function toast(b,s){const t=document.createElement("div");t.className="toast";t.innerHTML=`<b>${esc(b)}</b><span>${esc(s)}</span>`;$("#toasts").append(t);setTimeout(()=>t.remove(),4000)}
+function toggleLayout(){layout=layout==="list"?"board":"list";if(view!=="list")go("list");else render()}
+function toggleTheme(){const t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("app-theme",t)}catch(e){}}
+
+// Keyboard first: single keys when not typing, G then X to navigate
+let gPending=0;
+addEventListener("keydown",e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();if(!$(".scrim"))cmdk();return}
+  if($(".scrim")||e.target.closest?.("input,textarea,[contenteditable]"))return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="b"){e.preventDefault();toggleLayout();return}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const key=e.key.toLowerCase();
+  if(gPending&&Date.now()-gPending<1000){gPending=0;if(key==="i")go("inbox");if(key==="a")go("list");return}
+  if(key==="g"){gPending=Date.now();return}
+  if(key==="c"){e.preventDefault();newIssue()}
+  if(key==="escape"&&view==="detail")go("list");
+  if(view==="list"&&layout==="list"&&(key==="j"||key==="k"||key==="arrowdown"||key==="arrowup")){e.preventDefault();sel=Math.max(0,Math.min(issues.length-1,sel+(key==="j"||key==="arrowdown"?1:-1)));render();$(".row.sel")?.scrollIntoView({block:"nearest"})}
+  if(view==="list"&&key==="enter"){const r=$(".row.sel");r&&go("detail",r.dataset.open)}
+});
+document.addEventListener("click",e=>{
+  const o=e.target.closest("[data-open]");if(o)return go("detail",o.dataset.open);
+  if(e.target.closest("[data-cmdk]"))return cmdk();
+  if(e.target.closest("[data-new]"))return newIssue();
+  const n=e.target.closest(".nav");if(n){e.preventDefault();document.querySelectorAll(".nav").forEach(x=>x.removeAttribute("aria-current"));n.setAttribute("aria-current","page");go(n.dataset.view)}
+  const t=e.target.closest(".tab");if(t)document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+});
+$("#themeBtn").onclick=toggleTheme; $("#layoutBtn").onclick=toggleLayout;
+render();
+
+// Self-test: open with ?selftest; the result goes to document.title and the console
+if(location.search.includes("selftest")){const ok=[],A=(c,m)=>{if(!c)throw new Error("FAIL "+m);ok.push(m)};
+  try{A(document.querySelectorAll(".row").length===issues.length,"list rows");toggleLayout();A(document.querySelectorAll(".card").length===issues.length,"board cards");toggleLayout();
+    cmdk();A($(".cmdk"),"cmdk opens");$(".cmdk input").value="dashboard";$(".cmdk input").dispatchEvent(new Event("input"));A(document.querySelectorAll(".opt").length===1,"cmdk filter");
+    $(".scrim").dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",bubbles:true}));A(view==="detail"&&$(".props"),"open detail");go("list");
+    A(document.documentElement.scrollWidth<=innerWidth,"no h-overflow");document.title="SELFTEST OK "+ok.length}
+  catch(err){document.title=err.message;console.error(err)}}
+</script>
+</body>
+</html>

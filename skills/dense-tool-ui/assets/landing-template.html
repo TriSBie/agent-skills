@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seamline: reconciliation without spreadsheets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+/* Change --accent-h and the fonts for your project. Copy the structure, bring your own brand. */
+:root{--accent-h:190;--font:"Geist",system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,monospace;
+  --bg:#08090a;--bg-1:#0f1011;--bg-2:#1c1c1f;--bg-3:#232326;
+  --ink:#f7f8f8;--ink-2:#d0d6e0;--ink-3:#8a8f98;--ink-4:#62666d;
+  --line:#23252a;--line-2:#34343a;--hair:rgba(255,255,255,.08);
+  --accent:oklch(.72 .13 var(--accent-h));--ease:cubic-bezier(.25,.46,.45,.94);--w:1024px}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:var(--w);margin:0 auto;padding:0 24px}
+.mono{font:400 12px/1.4 var(--mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.muted{color:var(--ink-3)}
+.link{color:var(--ink);font-weight:500}.link:hover{color:var(--ink-2)}
+.btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:999px;font-size:13px;font-weight:500;transition:background .16s var(--ease)}
+.btn-light{background:#e5e5e6;color:#08090a}.btn-light:hover{background:#fff}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--ink)}.btn-ghost:hover{background:rgba(255,255,255,.09)}
+.btn-lg{height:44px;padding:0 20px;font-size:15px}
+section{border-top:1px solid var(--line);padding:128px 0}
+
+/* 1. Header */
+header{position:sticky;top:0;z-index:20;height:72px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(8,9,10,.6);border-bottom:1px solid var(--hair)}
+header .wrap{height:100%;display:flex;align-items:center;gap:24px;max-width:1200px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.logo i{width:18px;height:18px;border-radius:5px;background:var(--accent)}
+nav{display:flex;gap:4px;margin-left:auto;align-items:center}
+nav a{font-size:13px;color:var(--ink-3);padding:6px 10px;border-radius:999px}nav a:hover{color:var(--ink)}
+nav .sep{width:1px;height:16px;background:var(--line-2);margin:0 6px}
+.burger{display:none;margin-left:auto;width:32px;height:32px;border-radius:999px}
+
+/* 2. Hero */
+.hero{padding:120px 0 0;border:0}
+.hero .wrap{max-width:1200px;padding:0 40px}
+h1{font-size:64px;line-height:1;font-weight:500;letter-spacing:-1.4px;max-width:760px}
+.hero-sub{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-top:24px}
+.hero-sub p{font-size:16px;color:var(--ink-3);max-width:440px}
+.hero-sub a{font-size:13px;color:var(--ink-3)}.hero-sub a b{color:var(--ink);font-weight:500}
+.shot{margin:64px 0 0 40px;height:460px;border:1px solid var(--line);border-right:0;border-radius:12px 0 0 0;background:var(--bg-1);overflow:hidden;display:grid;grid-template-columns:200px 1fr;-webkit-mask:linear-gradient(#000 55%,transparent);mask:linear-gradient(#000 55%,transparent)}
+.shot aside{border-right:1px solid var(--line);padding:14px 10px;display:grid;gap:4px;align-content:start}
+.shot aside span{height:24px;border-radius:6px;font-size:12px;color:var(--ink-3);padding:4px 8px}
+.shot aside span.on{background:var(--bg-3);color:var(--ink)}
+.shot .rows{padding:12px}
+.shot .r{display:grid;grid-template-columns:70px 16px 1fr 70px;gap:10px;align-items:center;height:40px;font-size:13px;padding:0 10px;border-radius:6px}
+.shot .r>:nth-child(3){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shot .r:nth-child(3){background:var(--bg-2)}
+.dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink-4)}
+.dot.p{border-color:#f0bf00;background:conic-gradient(#f0bf00 50%,transparent 0)}
+.dot.d{border-color:var(--accent);background:var(--accent)}
+
+/* 3. Logo band */
+.logos{padding:48px 0 0;border:0;text-align:center}
+.logos ul{list-style:none;padding:0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:24px;font-weight:600;font-size:18px;color:var(--ink-2);opacity:.8}
+
+/* 4. Manifesto */
+.manifesto p{font-size:40px;line-height:1.2;font-weight:500;letter-spacing:-.8px;color:var(--ink-3);max-width:880px}
+.manifesto p b{color:var(--ink);font-weight:500}
+.figs{display:grid;grid-template-columns:repeat(3,1fr);margin-top:80px;border-top:1px solid var(--line)}
+.figs div{padding:24px 24px 0;border-left:1px solid var(--line)}.figs div:first-child{border:0;padding-left:0}
+.figs svg{width:100%;height:120px;stroke:var(--ink-4);fill:none;margin:16px 0}
+.figs h3{font-size:15px;font-weight:500}
+
+/* 5. Feature section */
+.feat-head{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+h2{font-size:48px;line-height:1.05;font-weight:500;letter-spacing:-1px}
+.lead{font-size:24px;line-height:1.33;color:var(--ink-2);max-width:566px}
+.lead+a{display:inline-block;margin-top:20px;font-size:16px}
+.demo{margin-top:64px;border:1px solid var(--line);border-radius:12px;background:var(--bg-1);padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.col h4{font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:8px;display:flex;gap:6px;align-items:center}
+.card{background:var(--bg-2);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px;box-shadow:0 0 0 1px rgba(255,255,255,.05);cursor:grab}
+.card small{display:block;font-size:12px;color:var(--ink-4)}
+.specs{display:grid;grid-template-columns:1fr 1fr;margin-top:48px;border-top:1px solid var(--line)}
+.specs button{display:flex;justify-content:space-between;padding:14px 0;font-size:15px;color:var(--ink-3);border-bottom:1px solid var(--line);text-align:left}
+.specs button:hover{color:var(--ink)}
+.specs>div{display:grid}.specs>div+div{border-left:1px solid var(--line);padding-left:24px}.specs>div:first-child{padding-right:24px}
+
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .2s var(--ease);z-index:40}
+.drawer{position:fixed;top:8px;right:8px;bottom:8px;width:min(640px,calc(100vw - 16px));background:var(--bg-1);border:1px solid var(--line);border-radius:8px;padding:48px;overflow:auto;transform:translateX(105%);visibility:hidden;transition:transform .3s var(--ease),visibility 0s .3s;z-index:41}
+body.open .scrim{opacity:1;pointer-events:auto}body.open .drawer{transform:none;visibility:visible;transition:transform .3s var(--ease)}
+.drawer h2{margin:12px 0 20px}.drawer p{color:var(--ink-3);font-size:16px}
+.drawer .x{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:999px}.drawer .x:hover{background:var(--bg-3)}
+.drawer table{width:100%;margin-top:32px;border-collapse:collapse;font-size:13px}
+.drawer td{padding:10px 0;border-top:1px solid var(--line)}.drawer td+td{text-align:right;color:var(--ink-2)}
+
+/* 6. Changelog */
+.log{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;position:relative}
+.log:before{content:"";position:absolute;left:0;right:0;top:5px;height:1px;background:var(--line)}
+.log article{position:relative;padding-top:28px}
+.log article:before{content:"";position:absolute;top:0;left:0;width:11px;height:11px;border-radius:50%;background:var(--ink-4);box-shadow:0 0 0 4px var(--bg)}
+.log article:first-child:before{background:var(--accent)}
+.log h3{font-size:15px;font-weight:500;margin:8px 0 4px}
+.log p{font-size:13px;color:var(--ink-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* 7. Testimonials: the only place with strong color */
+.quotes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px}
+.quote{border-radius:8px;padding:40px;color:#0b0b0c;display:flex;flex-direction:column;justify-content:space-between;min-height:360px}
+.quote:nth-child(1){background:linear-gradient(135deg,oklch(.86 .08 var(--accent-h)),oklch(.86 .07 calc(var(--accent-h) + 80)))}
+.quote:nth-child(2){background:oklch(.92 .17 110)}
+.quote blockquote{font-size:28px;line-height:1.25;font-weight:500;letter-spacing:-.5px;text-indent:-.4em}
+.quote footer{font-size:13px;margin-top:32px}.quote footer b{display:block;font-weight:600}
+
+/* 8. Pricing */
+.toggle{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-3);margin-top:16px}
+.sw{width:28px;height:16px;border-radius:999px;background:var(--bg-3);position:relative;transition:background .16s}
+.sw:after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .16s var(--ease)}
+.sw[aria-checked=true]{background:var(--accent)}.sw[aria-checked=true]:after{transform:translateX(12px)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px}
+.plan{padding:0 24px;border-left:1px solid var(--line);display:flex;flex-direction:column;align-items:start}
+.plan ul{margin-bottom:24px;width:100%}.plan .btn{margin-top:auto}.plan:first-child{border:0;padding-left:0}
+.plan h3{font-size:24px;font-weight:600}
+.price{font-size:15px;margin:8px 0 20px}.price b{font-size:15px;font-weight:600}.price span{color:var(--ink-3)}
+.plan ul{list-style:none;padding:20px 0 0;border-top:1px solid var(--line);display:grid;gap:10px;font-size:13px;color:var(--ink-2)}
+.plan li:before{content:"✓";display:inline-grid;place-items:center;width:14px;height:14px;border-radius:50%;border:1px solid var(--ink-4);font-size:9px;margin-right:8px;color:var(--ink-3)}
+.plan .btn{height:40px}
+.compare{width:100%;border-collapse:collapse;margin-top:96px;font-size:13px}
+.compare thead th{position:sticky;top:72px;background:var(--bg);height:56px;font-size:16px;font-weight:500;text-align:left;z-index:1}
+.compare th,.compare td{padding:0 16px;height:44px;text-align:left}
+.compare td+td,.compare th+th{border-left:1px solid var(--line)}
+.compare tbody th{font-weight:400;color:var(--ink-2)}
+.compare .grp th{font-size:20px;font-weight:500;padding-top:40px;height:auto;color:var(--ink);border:0}
+.no{color:var(--ink-4)}
+
+/* 9. Prefooter + footer */
+.pre{text-align:center}
+.pre h2{font-size:40px}.pre div{display:flex;gap:12px;justify-content:center;margin-top:32px}
+footer.site{border-top:1px solid var(--line);padding:64px 0 40px}
+.fcols{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:24px}
+.fcols h4{font-size:13px;font-weight:500;margin-bottom:8px}
+.fcols a{display:block;font-size:13px;color:var(--ink-3);line-height:30px}.fcols a:hover{color:var(--ink)}
+.legal{margin-top:48px;font-size:13px;color:var(--ink-4)}
+
+@media (max-width:640px){
+  nav{display:none}.burger{display:block}
+  .hero{padding-top:64px}.hero .wrap{padding:0 24px}
+  h1{font-size:38px;max-width:360px;letter-spacing:-.69px;line-height:1.05}
+  .hero-sub{flex-direction:column;align-items:start}
+  h1 br,h2 br{display:none}
+  .shot{margin-left:24px;height:300px;grid-template-columns:1fr}.shot aside{display:none}
+  .shot .r{grid-template-columns:56px 14px 1fr;gap:8px;font-size:12px}.shot .r>:last-child{display:none}
+  section{padding:80px 0}
+  .manifesto p{font-size:26px}
+  h2,.pre h2{font-size:32px}.lead{font-size:19px}
+  .feat-head,.figs,.specs,.log,.quotes,.plans,.demo{grid-template-columns:1fr}
+  .figs div,.specs>div,.specs>div+div,.plan{border:0;padding:0}.plan+.plan{margin-top:48px}
+  .compare{display:block;overflow-x:auto}
+  .quote{min-height:0;padding:28px}.quote blockquote{font-size:22px}
+  .fcols{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="logo" href="#"><i></i>Seamline</a>
+  <nav aria-label="Main"><a href="#features">Features</a><a href="#changelog">Changelog</a><a href="#customers">Customers</a><a href="#pricing">Pricing</a><span class="sep"></span><a href="#">Docs</a><a class="btn btn-light" href="#">Open app</a></nav>
+  <button class="burger" aria-label="Open menu">☰</button>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <h1>Reconcile payments <br>without a spreadsheet.</h1>
+  <div class="hero-sub">
+    <p>Seamline matches records across your systems every hour. Where they differ, why, and how to fix it, on one screen.</p>
+    <a href="#changelog"><b>New</b> Automatic replay →</a>
+  </div></div>
+  <!-- The product itself. Replace with a real screenshot of your product. -->
+  <div class="shot" aria-hidden="true">
+    <aside><span>Inbox</span><span class="on">Today's mismatches</span><span>Resolved</span><span>Sources</span></aside>
+    <div class="rows">
+      <div class="r"><span class="muted">MM-1042</span><i class="dot"></i><span>Payment in the ledger, missing in billing</span><span class="muted">10:42</span></div>
+      <div class="r"><span class="muted">MM-1041</span><i class="dot p"></i><span>Amount off by $12.00, checking</span><span class="muted">10:31</span></div>
+      <div class="r"><span class="muted">MM-1039</span><i class="dot d"></i><span>Replayed 38 payments to billing</span><span class="muted">09:58</span></div>
+      <div class="r"><span class="muted">MM-1035</span><i class="dot"></i><span>Duplicate payment ID from a partner</span><span class="muted">09:12</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="logos"><div class="wrap">
+  <ul><li>Northwind</li><li>Acme Pay</li><li>Fjord Labs</li><li>Lumen</li><li>Delta</li><li>Orbit</li></ul>
+  <p class="mono">Reconciling for finance and engineering teams</p>
+</div></section>
+
+<section class="manifesto"><div class="wrap">
+  <p><b>Reconciliation should not be a month-end chore.</b> Seamline runs all the time, speaks up only when something is off, and keeps the full trail so anyone can check the work.</p>
+  <div class="figs">
+    <div><p class="mono">FIG 0.1</p><svg viewBox="0 0 200 120"><path d="M20 90 100 50 180 90 100 110Z M20 70 100 30 180 70"/></svg><h3>Hourly matching</h3></div>
+    <div><p class="mono">FIG 0.2</p><svg viewBox="0 0 200 120"><circle cx="100" cy="60" r="40"/><path d="M60 60h80M100 20v80"/></svg><h3>Root-cause tags</h3></div>
+    <div><p class="mono">FIG 0.3</p><svg viewBox="0 0 200 120"><path d="M30 100V40h40v60M80 100V20h40v80M130 100V60h40v40"/></svg><h3>Full audit trail</h3></div>
+  </div>
+</div></section>
+
+<section id="features"><div class="wrap">
+  <div class="feat-head">
+    <h2>Every mismatch <br>has an owner.</h2>
+    <div><p class="lead">Each mismatch becomes a task with an owner and a status. Drag it to the next step, no meeting needed.</p><a class="link" href="#">Learn more →</a></div>
+  </div>
+  <!-- A real interactive demo, not a static image -->
+  <div class="demo" id="demo">
+    <div class="col" data-s="new"><h4><i class="dot"></i>New</h4><div class="card" draggable="true">Missing in billing<small>MM-1042</small></div><div class="card" draggable="true">Duplicate ID<small>MM-1035</small></div></div>
+    <div class="col" data-s="doing"><h4><i class="dot p"></i>In progress</h4><div class="card" draggable="true">Amount mismatch<small>MM-1041</small></div></div>
+    <div class="col" data-s="done"><h4><i class="dot d"></i>Done</h4><div class="card" draggable="true">Replay 38 payments<small>MM-1039</small></div></div>
+  </div>
+  <div class="specs">
+    <div><button data-spec="0">Matching rules <span>+</span></button><button data-spec="1">Root-cause tags <span>+</span></button></div>
+    <div><button data-spec="2">One-click replay <span>+</span></button><button data-spec="3">Audit log <span>+</span></button></div>
+  </div>
+</div></section>
+
+<section id="changelog"><div class="wrap">
+  <h2>Changelog</h2>
+  <div class="log">
+    <article><p class="mono">Nov 10, 2026</p><h3>Automatic replay</h3><p>When a payment exists at the source but is missing downstream for more than 30 minutes, Seamline sends it again and records the result.</p></article>
+    <article><p class="mono">Oct 28, 2026</p><h3>Partner filters</h3><p>Filter mismatches by partner, payment channel and amount range.</p></article>
+    <article><p class="mono">Oct 14, 2026</p><h3>Accounting export</h3><p>One button exports the accountant's template, with a digital signature and timestamp.</p></article>
+  </div>
+  <p style="margin-top:32px"><a class="link" href="#">View all →</a></p>
+</div></section>
+
+<section id="customers"><div class="wrap">
+  <h2>What teams say</h2>
+  <div class="quotes">
+    <figure class="quote"><blockquote>“Month-end used to cost us two days of hunting. Now every morning we know exactly what is left.”</blockquote><footer><b>Dana K.</b>Finance lead, Acme Pay</footer></figure>
+    <figure class="quote"><blockquote>“For the first time, engineering and accounting look at the same number.”</blockquote><footer><b>Sam R.</b>Backend lead, Delta</footer></figure>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap">
+  <h2>Pricing</h2>
+  <button class="toggle" id="yearly"><span class="sw" role="switch" aria-checked="true" aria-label="Billed yearly"></span>Billed yearly (save 20%)</button>
+  <div class="plans">
+    <div class="plan"><h3>Free</h3><p class="price"><b>$0</b></p><ul><li>1 source</li><li>Daily matching</li><li>2 members</li></ul><a class="btn btn-ghost" href="#">Get started</a></div>
+    <div class="plan"><h3>Team</h3><p class="price"><b data-m="$15" data-y="$12">$12</b> <span>per user/month</span></p><ul><li>All Free features, plus:</li><li>10 sources</li><li>Hourly matching</li><li>One-click replay</li></ul><a class="btn btn-ghost" href="#">Get started</a></div>
+    <div class="plan"><h3>Enterprise</h3><p class="price"><b>Custom</b></p><ul><li>All Team features, plus:</li><li>Unlimited sources</li><li>SSO, audit log</li><li>Dedicated support</li></ul><a class="btn btn-ghost" href="#">Contact sales</a></div>
+  </div>
+  <table class="compare">
+    <thead><tr><th scope="col"><span class="mono">Compare</span></th><th scope="col">Free</th><th scope="col">Team</th><th scope="col">Enterprise</th></tr></thead>
+    <tbody>
+      <tr class="grp"><th colspan="4" scope="colgroup">Reconciliation</th></tr>
+      <tr><th scope="row">Sources</th><td>1</td><td>10</td><td>Unlimited</td></tr>
+      <tr><th scope="row">Matching frequency</th><td>Daily</td><td>Hourly</td><td>Every 5 minutes</td></tr>
+      <tr><th scope="row">One-click replay</th><td class="no" aria-label="No">✕</td><td aria-label="Yes">✓</td><td aria-label="Yes">✓</td></tr>
+      <tr class="grp"><th colspan="4" scope="colgroup">Security</th></tr>
+      <tr><th scope="row">SSO</th><td class="no" aria-label="No">✕</td><td class="no" aria-label="No">✕</td><td aria-label="Yes">✓</td></tr>
+      <tr><th scope="row">Audit log</th><td class="no" aria-label="No">✕</td><td>30 days</td><td>Unlimited</td></tr>
+    </tbody>
+  </table>
+</div></section>
+
+<section class="pre"><div class="wrap">
+  <h2>Fix the gaps before <br>accounting asks.</h2>
+  <div><a class="btn btn-light btn-lg" href="#">Open app</a><a class="btn btn-ghost btn-lg" href="#">Book a demo</a></div>
+</div></section>
+</main>
+
+<footer class="site"><div class="wrap">
+  <div class="fcols">
+    <a class="logo" href="#"><i></i>Seamline</a>
+    <div><h4>Product</h4><a href="#">Features</a><a href="#">Pricing</a><a href="#">Changelog</a></div>
+    <div><h4>Company</h4><a href="#">About</a><a href="#">Careers</a></div>
+    <div><h4>Resources</h4><a href="#">Guides</a><a href="#">API</a><a href="#">Status</a></div>
+    <div><h4>Contact</h4><a href="#">Support</a><a href="#">Sales</a></div>
+  </div>
+  <p class="legal">© 2026 Seamline · Terms · Privacy</p>
+</div></footer>
+
+<div class="scrim"></div>
+<aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dt" tabindex="-1">
+  <button class="x" aria-label="Close">✕</button>
+  <p class="mono">Tech specs</p><h2 id="dt"></h2><p id="dd"></p>
+  <table><tbody id="dtab"></tbody></table>
+</aside>
+
+<script>
+const SPECS=[
+  ['Matching rules','Match on payment ID, amount and time, with a tolerance per partner.',[['Match keys','id, amount, ts'],['Time tolerance','±5 min'],['Custom rules','Yes']]],
+  ['Root-cause tags','Each mismatch gets a cause based on its trail through every layer.',[['Cause groups','6'],['Accuracy','Checkable by hand']]],
+  ['One-click replay','Resend dropped payments straight from the mismatch screen, with a confirmation and a log entry.',[['Batch limit','500 payments'],['Undo','No, so it asks first']]],
+  ['Audit log','Who did what, when, to which payment. Exportable for auditors.',[['Retention','By plan'],['Export formats','CSV, PDF']]]];
+const $=s=>document.querySelector(s), body=document.body, drawer=$('.drawer');
+let lastFocus;
+function openSpec(i){const [t,d,rows]=SPECS[i];$('#dt').textContent=t;$('#dd').textContent=d;
+  $('#dtab').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  lastFocus=document.activeElement;body.classList.add('open');drawer.focus()}
+function closeSpec(){body.classList.remove('open');lastFocus?.focus()}
+document.querySelectorAll('[data-spec]').forEach(b=>b.onclick=()=>openSpec(+b.dataset.spec));
+$('.scrim').onclick=closeSpec;$('.x').onclick=closeSpec;
+addEventListener('keydown',e=>{if(e.key==='Escape'&&body.classList.contains('open'))closeSpec()});
+
+// Pricing: yearly/monthly toggle
+$('#yearly').onclick=()=>{const sw=$('.sw'),y=sw.getAttribute('aria-checked')!=='true';sw.setAttribute('aria-checked',y);
+  document.querySelectorAll('[data-y]').forEach(b=>b.textContent=y?b.dataset.y:b.dataset.m)};
+
+// Drag-and-drop demo board
+let drag;
+document.querySelectorAll('.card').forEach(c=>c.ondragstart=()=>drag=c);
+document.querySelectorAll('.col').forEach(col=>{col.ondragover=e=>e.preventDefault();col.ondrop=()=>drag&&col.append(drag)});
+
+$('.burger').onclick=()=>$('footer.site').scrollIntoView(); // ponytail: mobile menu only scrolls to the footer links; add a real sheet menu when needed
+
+if(location.search.includes('selftest')){
+  const ok=[];const t=(n,c)=>{if(!c)throw Error('FAIL '+n);ok.push(n)};
+  t('one light CTA in header',document.querySelectorAll('header .btn-light').length===1);
+  openSpec(2);t('drawer opens',body.classList.contains('open')&&$('#dt').textContent==='One-click replay');
+  closeSpec();t('drawer closes',!body.classList.contains('open'));
+  $('#yearly').click();t('monthly price',$('[data-y]').textContent==='$15');$('#yearly').click();
+  t('yearly price',$('[data-y]').textContent==='$12');
+  $('.col[data-s=done]').append($('.card'));t('board move',$('.col[data-s=done]').children.length===3);
+  t('no h-overflow',document.documentElement.scrollWidth<=innerWidth);
+  document.title='SELFTEST OK '+ok.length;
+}
+</script>
+</body>
+</html>

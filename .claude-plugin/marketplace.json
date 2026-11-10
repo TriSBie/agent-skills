@@ -1,0 +1,14 @@
+{
+  "name": "trisbie-agent-skills",
+  "owner": { "name": "TriSBie" },
+  "metadata": { "description": "Agent Skills by TriSBie", "version": "0.1.0" },
+  "plugins": [
+    {
+      "name": "trisbie-skills",
+      "description": "All skills in this repo",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/dense-tool-ui"]
+    }
+  ]
+}
