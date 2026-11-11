@@ -1,0 +1,5 @@
+name: "vercel-dashboard-crm"
+title: "Vercel Dashboard CRM"
+description: "Build a CRM or dashboard-management website in the design language of the live Vercel team dashboard (vercel.com/trisbies-projects, 11/11/2026): 254px sidebar + 56px top bar, #fafafa canvas with white hairline cards, 13-14px dense type, black primary buttons, one blue link accent, grid/list toggle, usage and alerts panels — with the verified measurements, CRM mappings, and the pass-3 interaction spec (menus, Cmd+K, notifications, dialogs, skeletons, disabled states) ready to implement."
+category: "Work and knowledge"
+include_in_prompt: false
