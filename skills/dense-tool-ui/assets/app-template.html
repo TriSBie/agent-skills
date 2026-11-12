@@ -6,9 +6,9 @@
 <title>App shell template (dense-tool-ui)</title>
 <script>try{const t=localStorage.getItem("app-theme");if(t)document.documentElement.dataset.theme=t;else if(matchMedia("(prefers-color-scheme: light)").matches)document.documentElement.dataset.theme="light"}catch(e){}</script>
 <style>
-/* Tokens measured from a dense tool UI (Nov 2026). Change --accent-h and --font for your brand. */
+/* dense-tool-ui design system v1. Change --accent-h and --font for your brand. If the project already has tokens, map these names onto them instead. */
 :root{
-  --accent-h:250; --accent:lch(48 59 var(--accent-h)); --accent-ink:lch(100 5 var(--accent-h));
+  --accent-h:250; --accent:lch(44 59 var(--accent-h)) /* L44: white text >= 4.5:1 for every hue */; --accent-ink:lch(100 5 var(--accent-h));
   --font:system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
   --sidebar-w:244px; --hdr-h:52px; --row-h:44px; --ctl-h:28px;
@@ -23,13 +23,13 @@
   --bg-ctl:lch(17.6 1.6 272);      /* chips, secondary buttons */
   --bg-hover:lch(16.7 1 272);      /* selected row/tab */
   --line:lch(9.8 1.5 272); --line-2:lch(14.2 1.5 272); --line-3:lch(21.4 1.9 272);
-  --ink:lch(100 0 272); --ink-2:lch(90.5 1.2 272); --ink-3:lch(61.8 1.2 272); --ink-4:lch(37 1.2 272);
+  --ink:lch(100 0 272); --ink-2:lch(90.5 1.2 272); --ink-3:lch(61.8 1.2 272); --ink-4:lch(37 1.2 272); /* ink-4 = decoration only (dots, strokes, disabled): 2.6:1, never for text */
   --ring:lch(100 0 0 / .048); --drop:lch(0 0 0 / .3);
 }
 [data-theme=light]{color-scheme:light;
   --bg-app:#efeff0; --bg-panel:#fcfcfd; --bg-2:#fff; --bg-3:#fff; --bg-ctl:#ececee; --bg-hover:#e6e6e9;
   --line:#e2e2e2; --line-2:#dcdbdd; --line-3:#d0d0d4;
-  --ink:#1b1c20; --ink-2:#3c4149; --ink-3:#6f6e77; --ink-4:#a3a2aa;
+  --ink:#1b1c20; --ink-2:#3c4149; --ink-3:#66656e; --ink-4:#a3a2aa;
   --ring:lch(0 0 0 / .06); --drop:lch(0 0 0 / .08);
 }
 *{box-sizing:border-box;margin:0}
@@ -50,8 +50,8 @@ kbd{font:500 11px/1 var(--font);min-width:18px;height:18px;padding:0 4px;display
 .nav{display:flex;align-items:center;gap:8px;height:var(--ctl-h);padding:0 9px 0 8px;border-radius:var(--r-ctl);color:var(--ink-3);font-weight:500;text-decoration:none}
 .nav:hover{background:var(--bg-hover);color:var(--ink-2)}
 .nav[aria-current]{background:var(--bg-hover);color:var(--ink)}
-.nav .n{margin-left:auto;font-size:11px;color:var(--ink-4)}
-.sec{margin:14px 0 2px;padding:0 9px;font-size:12px;font-weight:500;color:var(--ink-4)}
+.nav .n{margin-left:auto;font-size:11px;color:var(--ink-3)}
+.sec{margin:14px 0 2px;padding:0 9px;font-size:12px;font-weight:500;color:var(--ink-3)}
 .ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.5}
 
 .panel{margin:8px 8px 8px 0;background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r-panel);box-shadow:var(--drop) 0 .5px 1px 1px;display:flex;flex-direction:column;min-width:0;overflow:hidden}
@@ -102,7 +102,7 @@ kbd{font:500 11px/1 var(--font);min-width:18px;height:18px;padding:0 4px;display
 .act{margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
 .act h2{font-size:15px;font-weight:600}
 .ev{margin-top:12px;font-size:12px;color:var(--ink-3)}
-.cmt{margin-top:14px;min-height:80px;border-radius:var(--r-panel);background:var(--bg-2);box-shadow:var(--ring) 0 0 0 1px;padding:14px 16px;color:var(--ink-4)}
+.cmt{margin-top:14px;min-height:80px;border-radius:var(--r-panel);background:var(--bg-2);box-shadow:var(--ring) 0 0 0 1px;padding:14px 16px;color:var(--ink-3)}
 .props{padding:36px 24px;border-left:1px solid var(--line);display:grid;gap:4px;align-content:start}
 .props h4{font-size:13px;font-weight:500;color:var(--ink-3);padding:0 8px;margin:14px 0 4px}
 .props h4:first-child{margin-top:0}
@@ -114,7 +114,7 @@ kbd{font:500 11px/1 var(--font);min-width:18px;height:18px;padding:0 4px;display
 .cmdk{width:min(720px,100%);background:var(--bg-3);border:1px solid var(--line-3);border-radius:var(--r-panel);box-shadow:lch(0 0 0 / .25) 0 8px 32px;overflow:hidden;animation:pop .16s var(--ease)}
 .cmdk .ctx{margin:12px 14px 0;display:inline-flex}
 .cmdk input{width:100%;height:48px;padding:0 18px;background:none;border:0;outline:0;font:15px var(--font);color:var(--ink);border-bottom:1px solid var(--line-2)}
-.cmdk input::placeholder{color:var(--ink-4)}
+.cmdk input::placeholder,.modal ::placeholder{color:var(--ink-3)}
 .opts{max-height:360px;overflow:auto;padding:6px}
 .opt{display:flex;align-items:center;gap:12px;height:46px;padding:0 12px;border-radius:var(--r-ctl);font-size:14px;font-weight:500;color:var(--ink-2)}
 .opt[aria-selected=true]{background:var(--bg-hover);color:var(--ink)}
@@ -201,17 +201,19 @@ kbd{font:500 11px/1 var(--font);min-width:18px;height:18px;padding:0 4px;display
 // Sample data (made up). Replace with the project's real data.
 const STATUS={backlog:["Backlog","back","var(--ink-3)"],todo:["Todo","","var(--ink-2)"],prog:["In Progress","prog","#f0bf00"],done:["Done","done","#5e6ad2"]};
 const issues=[
-  {id:"ACM-42",t:"Notification emails are sent twice",s:"prog",l:["Bug","#eb5757"],d:"Nov 12"},
-  {id:"ACM-41",t:"Add retry with backoff to webhook delivery",s:"todo",l:["Backend","#4ea7fc"],d:"Nov 14"},
-  {id:"ACM-40",t:"Usage dashboard by day",s:"todo",l:["Feature","#27a644"],d:"Nov 18"},
+  {id:"ACM-42",t:"Notification emails are sent twice",s:"prog",l:["Bug","#eb5757"],d:"2026-11-12"},
+  {id:"ACM-41",t:"Add retry with backoff to webhook delivery",s:"todo",l:["Backend","#4ea7fc"],d:"2026-11-14"},
+  {id:"ACM-40",t:"Usage dashboard by day",s:"todo",l:["Feature","#27a644"],d:"2026-11-18"},
   {id:"ACM-38",t:"Move image uploads to a background job",s:"backlog",l:["Backend","#4ea7fc"],d:""},
-  {id:"ACM-35",t:"Add index on orders.user_id",s:"done",l:["DB","#fc7840"],d:"Nov 3"},
+  {id:"ACM-35",t:"Add index on orders.user_id",s:"done",l:["DB","#fc7840"],d:"2026-11-03"},
 ];
 let layout="list", view="list", sel=0, open=null;
 const $=s=>document.querySelector(s), body=$("#body");
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// Every value from data goes through esc() before it touches innerHTML (text AND attributes). Never skip it for "trusted" fields.
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDate=d=>d?new Intl.DateTimeFormat(document.documentElement.lang,{month:"short",day:"numeric"}).format(new Date(d+"T00:00")):"";
 const st=s=>`<span class="st ${STATUS[s][1]}" style="--c:${STATUS[s][2]}" aria-label="${STATUS[s][0]}"></span>`;
-const chip=l=>`<span class="chip"><span class="dot" style="--c:${l[1]}"></span>${esc(l[0])}</span>`;
+const chip=l=>`<span class="chip"><span class="dot" style="--c:${esc(l[1])}"></span>${esc(l[0])}</span>`;
 
 function render(){
   $("#bar").hidden=view!=="list";
@@ -219,10 +221,10 @@ function render(){
   if(view==="inbox"){body.innerHTML=`<div style="display:grid;place-items:center;height:100%;color:var(--ink-3)">No notifications</div>`;return}
   const groups=Object.keys(STATUS).map(k=>[k,issues.filter(i=>i.s===k)]);
   if(layout==="board"){
-    body.innerHTML=`<div class="board">${groups.map(([k,g])=>`<section class="col"><h3>${st(k)}${STATUS[k][0]} <span class="c">${g.length}</span></h3>${g.map(i=>`<article class="card" data-open="${i.id}"><span class="id">${i.id}</span><b>${esc(i.t)}</b><div>${chip(i.l)}</div></article>`).join("")}</section>`).join("")}</div>`;
+    body.innerHTML=`<div class="board">${groups.map(([k,g])=>`<section class="col"><h3>${st(k)}${STATUS[k][0]} <span class="c">${g.length}</span></h3>${g.map(i=>`<article class="card" data-open="${esc(i.id)}"><span class="id">${esc(i.id)}</span><b>${esc(i.t)}</b><div>${chip(i.l)}</div></article>`).join("")}</section>`).join("")}</div>`;
   }else{
     let n=0;
-    body.innerHTML=groups.filter(([,g])=>g.length).map(([k,g])=>`<div class="grp">${st(k)}${STATUS[k][0]} <span class="c">${g.length}</span></div>`+g.map(i=>`<div class="row${n++===sel?" sel":""}" data-open="${i.id}"><span class="id">${i.id}</span>${st(i.s)}<span class="t">${esc(i.t)}</span>${chip(i.l)}<span class="meta">${i.d}</span></div>`).join("")).join("");
+    body.innerHTML=groups.filter(([,g])=>g.length).map(([k,g])=>`<div class="grp">${st(k)}${STATUS[k][0]} <span class="c">${g.length}</span></div>`+g.map(i=>`<div class="row${n++===sel?" sel":""}" data-open="${esc(i.id)}"><span class="id">${esc(i.id)}</span>${st(i.s)}<span class="t">${esc(i.t)}</span>${chip(i.l)}<span class="meta">${fmtDate(i.d)}</span></div>`).join("")).join("");
   }
 }
 function renderDetail(){
@@ -236,7 +238,7 @@ function renderDetail(){
 function go(v,id){view=v;open=id||null;if(v!=="detail")$("#title").textContent=v==="inbox"?"Inbox":"Issues";render()}
 
 // ⌘K: context chip while an issue is open, shortcuts shown on the right
-const CMDS=[["Create new issue",["C"],()=>newIssue()],["Toggle list/board",["Ctrl","B"],()=>toggleLayout()],["Toggle light/dark theme",[],()=>toggleTheme()],["Go to Inbox",["G","I"],()=>go("inbox")],["Go to Issues",["G","A"],()=>go("list")]];
+const CMDS=[["Create new issue",["C"],()=>newIssue()],["Toggle list/board",["Ctrl","B"],()=>toggleLayout()],["Toggle light/dark theme",[],()=>toggleTheme()],["Go to Inbox",["G","I"],()=>go("inbox")],["Go to Issues",["G","A"],()=>go("list")],["Turn single-key shortcuts on/off",[],()=>toggleKeys()]];
 const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").toLowerCase();
 function cmdk(){
   if($(".scrim"))return;
@@ -262,12 +264,15 @@ function newIssue(){
   sc.innerHTML=`<form class="modal" role="dialog" aria-modal="true" aria-label="Create issue"><input name="t" placeholder="Issue title" aria-label="Title" required><textarea name="d" placeholder="Add description…" aria-label="Description"></textarea><div class="chips"><span class="chip">${st("backlog")}Backlog</span><span class="chip">Priority</span><span class="chip">Assignee</span><span class="chip">Labels</span></div><div class="foot"><button type="button" class="btn" data-x>Cancel</button><button class="btn pri">Create issue <kbd style="background:transparent;color:inherit">Ctrl ↵</kbd></button></div></form>`;
   document.body.append(sc); $(".app").inert=true;
   const f=sc.querySelector("form"), close=()=>{sc.remove();$(".app").inert=false;back&&back.focus()};
-  f.onsubmit=e=>{e.preventDefault();const t=f.t.value.trim();if(!t)return;const id="ACM-"+(43+issues.length-5);issues.unshift({id,t,s:"backlog",l:["Triage","#00b8cc"],d:""});close();render();toast("Issue created",id+" · "+t)};
+  f.onsubmit=e=>{e.preventDefault();const t=f.t.value.trim();if(!t)return;const id="ACM-"+(Math.max(0,...issues.map(x=>+x.id.split("-")[1]))+1);issues.unshift({id,t,s:"backlog",l:["Triage","#00b8cc"],d:""});close();render();toast("Issue created",id+" · "+t)};
   sc.onkeydown=e=>{e.stopPropagation();if(e.key==="Escape")close();if(e.key==="Enter"&&(e.ctrlKey||e.metaKey))f.requestSubmit()};
   sc.querySelector("[data-x]").onclick=close; f.t.focus();
 }
 function toast(b,s){const t=document.createElement("div");t.className="toast";t.innerHTML=`<b>${esc(b)}</b><span>${esc(s)}</span>`;$("#toasts").append(t);setTimeout(()=>t.remove(),4000)}
 function toggleLayout(){layout=layout==="list"?"board":"list";if(view!=="list")go("list");else render()}
+// WCAG 2.1.4: single-character shortcuts must be switchable off (screen readers, voice input)
+let keysOn=true;try{keysOn=localStorage.getItem("app-keys")!=="off"}catch(e){}
+function toggleKeys(){keysOn=!keysOn;try{localStorage.setItem("app-keys",keysOn?"on":"off")}catch(e){}toast("Single-key shortcuts "+(keysOn?"on":"off"),"Ctrl K still works")}
 function toggleTheme(){const t=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("app-theme",t)}catch(e){}}
 
 // Keyboard first: single keys when not typing, G then X to navigate
@@ -276,7 +281,7 @@ addEventListener("keydown",e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();if(!$(".scrim"))cmdk();return}
   if($(".scrim")||e.target.closest?.("input,textarea,[contenteditable]"))return;
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="b"){e.preventDefault();toggleLayout();return}
-  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.ctrlKey||e.metaKey||e.altKey||!keysOn)return;
   const key=e.key.toLowerCase();
   if(gPending&&Date.now()-gPending<1000){gPending=0;if(key==="i")go("inbox");if(key==="a")go("list");return}
   if(key==="g"){gPending=Date.now();return}
@@ -300,6 +305,8 @@ if(location.search.includes("selftest")){const ok=[],A=(c,m)=>{if(!c)throw new E
   try{A(document.querySelectorAll(".row").length===issues.length,"list rows");toggleLayout();A(document.querySelectorAll(".card").length===issues.length,"board cards");toggleLayout();
     cmdk();A($(".cmdk"),"cmdk opens");$(".cmdk input").value="dashboard";$(".cmdk input").dispatchEvent(new Event("input"));A(document.querySelectorAll(".opt").length===1,"cmdk filter");
     $(".scrim").dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",bubbles:true}));A(view==="detail"&&$(".props"),"open detail");go("list");
+    issues.push({id:"X-1\"><img src=x id=xss>",t:"<img src=x id=xss2>",s:"todo",l:["L","red\"><img id=xss3>"],d:""});render();const x1=!document.querySelector("#xss,#xss2,#xss3");toggleLayout();A(x1&&!document.querySelector("#xss,#xss2,#xss3"),"data is escaped");toggleLayout();issues.pop();render();
+    keysOn=false;dispatchEvent(new KeyboardEvent("keydown",{key:"c"}));A(!$(".scrim"),"single keys can be off");keysOn=true;
     A(document.documentElement.scrollWidth<=innerWidth,"no h-overflow");document.title="SELFTEST OK "+ok.length}
   catch(err){document.title=err.message;console.error(err)}}
 </script>

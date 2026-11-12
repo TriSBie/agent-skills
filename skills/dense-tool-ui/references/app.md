@@ -8,7 +8,7 @@ Measured at 1280×720 with computed styles, Nov 2026. The source UI changes over
 - **Sidebar**, top to bottom:
   - Workspace switcher (22px avatar, name, ▾), with round Search and New buttons on the right.
   - Personal group: Inbox (count or dot), My issues, Reviews.
-  - Group heading "Workspace ▾" (12px, `--ink-4`, collapsible): Projects, Views, More.
+  - Group heading "Workspace ▾" (12px, `--ink-3`, collapsible; the source used a dimmer gray that fails AA): Projects, Views, More.
   - "Your teams ▾": team name, children indented 16px.
   - Bottom: a dismissible tip card and a Help button.
   - Items are 28px tall, padding `0 9px 0 8px`, radius 8px, 13px/500 `--ink-3`. Active item: `--bg-hover` background, `--ink` text.

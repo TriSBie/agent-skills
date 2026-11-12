@@ -43,6 +43,10 @@ Measurements were taken from a live product in November 2026 and will drift as t
 
 Measurements were taken live from the Vercel team dashboard in November 2026 and will drift as that product changes. The skill copies structure and behavior only: no logos, names, illustrations or copy from the source. One rule from the build: no shell controls — every menu item must lead to a real screen, a real link, or a real action, never a placeholder popup.
 
+## Checks
+
+`node scripts/check.mjs` checks WCAG AA contrast for every `tokens.json` and runs every template's `?selftest` in headless Chrome. GitHub Actions runs it on each push and pull request.
+
 ## License
 
-MIT
+MIT. Not affiliated with, or endorsed by, Linear or Vercel. Product names are used only to describe the style being measured.

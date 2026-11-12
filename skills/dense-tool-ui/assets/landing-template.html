@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Seamline: reconciliation without spreadsheets</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- No third-party font requests (CSP/GDPR). To use a brand font, self-host it: @font-face{font-family:Brand;src:url(fonts/brand.woff2) format("woff2");font-display:swap} -->
 <style>
 /* Change --accent-h and the fonts for your project. Copy the structure, bring your own brand. */
-:root{--accent-h:190;--font:"Geist",system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,monospace;
+:root{--accent-h:190;--font:system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
   --bg:#08090a;--bg-1:#0f1011;--bg-2:#1c1c1f;--bg-3:#232326;
-  --ink:#f7f8f8;--ink-2:#d0d6e0;--ink-3:#8a8f98;--ink-4:#62666d;
+  --ink:#f7f8f8;--ink-2:#d0d6e0;--ink-3:#8a8f98;--ink-4:#62666d; /* decoration only (3.3:1): strokes, dots. Text uses ink-3+ */
   --line:#23252a;--line-2:#34343a;--hair:rgba(255,255,255,.08);
   --accent:oklch(.72 .13 var(--accent-h));--ease:cubic-bezier(.25,.46,.45,.94);--w:1024px}
 *{box-sizing:border-box;margin:0}
@@ -78,7 +77,7 @@ h2{font-size:48px;line-height:1.05;font-weight:500;letter-spacing:-1px}
 .demo{margin-top:64px;border:1px solid var(--line);border-radius:12px;background:var(--bg-1);padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .col h4{font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:8px;display:flex;gap:6px;align-items:center}
 .card{background:var(--bg-2);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px;box-shadow:0 0 0 1px rgba(255,255,255,.05);cursor:grab}
-.card small{display:block;font-size:12px;color:var(--ink-4)}
+.card small{display:block;font-size:12px;color:var(--ink-3)}
 .specs{display:grid;grid-template-columns:1fr 1fr;margin-top:48px;border-top:1px solid var(--line)}
 .specs button{display:flex;justify-content:space-between;padding:14px 0;font-size:15px;color:var(--ink-3);border-bottom:1px solid var(--line);text-align:left}
 .specs button:hover{color:var(--ink)}
@@ -129,7 +128,7 @@ body.open .scrim{opacity:1;pointer-events:auto}body.open .drawer{transform:none;
 .compare td+td,.compare th+th{border-left:1px solid var(--line)}
 .compare tbody th{font-weight:400;color:var(--ink-2)}
 .compare .grp th{font-size:20px;font-weight:500;padding-top:40px;height:auto;color:var(--ink);border:0}
-.no{color:var(--ink-4)}
+.no{color:var(--ink-3)}
 
 /* 9. Prefooter + footer */
 .pre{text-align:center}
@@ -138,7 +137,7 @@ footer.site{border-top:1px solid var(--line);padding:64px 0 40px}
 .fcols{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:24px}
 .fcols h4{font-size:13px;font-weight:500;margin-bottom:8px}
 .fcols a{display:block;font-size:13px;color:var(--ink-3);line-height:30px}.fcols a:hover{color:var(--ink)}
-.legal{margin-top:48px;font-size:13px;color:var(--ink-4)}
+.legal{margin-top:48px;font-size:13px;color:var(--ink-3)}
 
 @media (max-width:640px){
   nav{display:none}.burger{display:block}
@@ -288,9 +287,10 @@ const SPECS=[
   ['One-click replay','Resend dropped payments straight from the mismatch screen, with a confirmation and a log entry.',[['Batch limit','500 payments'],['Undo','No, so it asks first']]],
   ['Audit log','Who did what, when, to which payment. Exportable for auditors.',[['Retention','By plan'],['Export formats','CSV, PDF']]]];
 const $=s=>document.querySelector(s), body=document.body, drawer=$('.drawer');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let lastFocus;
 function openSpec(i){const [t,d,rows]=SPECS[i];$('#dt').textContent=t;$('#dd').textContent=d;
-  $('#dtab').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  $('#dtab').innerHTML=rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('');
   lastFocus=document.activeElement;body.classList.add('open');drawer.focus()}
 function closeSpec(){body.classList.remove('open');lastFocus?.focus()}
 document.querySelectorAll('[data-spec]').forEach(b=>b.onclick=()=>openSpec(+b.dataset.spec));
@@ -316,6 +316,7 @@ if(location.search.includes('selftest')){
   $('#yearly').click();t('monthly price',$('[data-y]').textContent==='$15');$('#yearly').click();
   t('yearly price',$('[data-y]').textContent==='$12');
   $('.col[data-s=done]').append($('.card'));t('board move',$('.col[data-s=done]').children.length===3);
+  t('no third-party requests',![...document.querySelectorAll('link[href],script[src]')].some(e=>/^https?:/.test(e.getAttribute('href')||e.getAttribute('src'))));
   t('no h-overflow',document.documentElement.scrollWidth<=innerWidth);
   document.title='SELFTEST OK '+ok.length;
 }
