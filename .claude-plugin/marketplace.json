@@ -1,7 +1,7 @@
 {
   "name": "trisbie-agent-skills",
   "owner": { "name": "TriSBie" },
-  "metadata": { "description": "Agent Skills by TriSBie", "version": "0.1.0" },
+  "metadata": { "description": "Agent Skills by TriSBie", "version": "0.2.0" },
   "plugins": [
     {
       "name": "trisbie-skills",
