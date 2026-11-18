@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive System Simulation Lab</title>
+    <meta
+      name="description"
+      content="A step-by-step interactive simulation course: watch data flows, bottlenecks and trade-offs play out on animated diagrams."
+    />
+    <script>
+      try {
+        var savedTheme = localStorage.getItem('sim:theme');
+        if (savedTheme === 'dark' || (!savedTheme && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      } catch (e) {}
+      var w = window.innerWidth, h = window.innerHeight;
+      document.documentElement.dataset.layout =
+        w >= 1200 && h >= 560 ? 'desktop' : w >= 960 && h >= 600 ? 'tablet' : 'stack';
+    </script>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

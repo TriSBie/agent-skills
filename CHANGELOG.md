@@ -2,6 +2,13 @@
 
 Versions follow semver. The version lives in `.claude-plugin/marketplace.json`.
 
+## 0.3.0 (2026-11-18)
+
+- **New skill: interactive-learning-sim.** Step-by-step simulation courses: isometric SVG stage, lesson data schema, 5-phase storyboard method, runnable Vite starter (learn, practice, cheatsheets, ⌘K, dark/light), `tokens.json`, evals and a lesson-data validator.
+- Fixed in the starter after a trial project: blank page on deep links, over-zoomed small scenes (zoom capped at 1.6x), link labels hidden under the target box, link label width now fits the text.
+- Validator warns on unknown entity kinds and on entities whose labels would overlap on screen (checked in projected pixels, so vertical branches are caught too).
+- `scripts/check.mjs` also runs each skill's lesson validator.
+
 ## 0.2.0 (2026-11-12)
 
 dense-tool-ui becomes "design system v1": stable tokens that pass WCAG AA, instead of raw measurements that drift.
