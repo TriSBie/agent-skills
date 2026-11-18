@@ -40,4 +40,15 @@ else for (const f of readdirSync('skills', { recursive: true }).filter(f => f.en
   if (title.startsWith('SELFTEST OK')) console.log(title, '·', f); else bad(`${f}: ${title}`);
 }
 
+// 3) Lesson data: every starter course-data.js must pass its skill's validator with 0 warnings.
+for (const f of readdirSync('skills', { recursive: true }).filter(f => f.replaceAll('\\', '/').endsWith('src/lessons/course-data.js'))) {
+  const skill = f.replaceAll('\\', '/').split('/')[0];
+  const validator = resolve('skills', skill, 'scripts/validate-lessons.mjs');
+  if (!existsSync(validator)) continue;
+  try {
+    const out = execFileSync(process.execPath, [validator, resolve('skills', f)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    if (/ 0 warning/.test(out)) console.log(out.trim(), '·', f); else bad(`${f}: ${out.trim()}`);
+  } catch (e) { bad(`${f}: ${(e.stdout || '') + (e.stderr || '')}`.trim()); }
+}
+
 process.exit(fail ? 1 : 0);
