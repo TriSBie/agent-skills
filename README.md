@@ -7,6 +7,7 @@ Agent Skills by [@TriSBie](https://github.com/TriSBie) for Claude Code and other
 | [dense-tool-ui](skills/dense-tool-ui) | Measured layout, interaction and color reference for dense, keyboard-first work tools and their dark landing pages, with two runnable templates. |
 | [vercel-dashboard-crm](skills/vercel-dashboard-crm) | Build a CRM or dashboard-management website in the design language of the live Vercel team dashboard: 254px sidebar + 56px top bar, #fafafa canvas, 13–14px dense type, black primary buttons, one blue link accent, grid/list toggle, usage and alerts panels — with verified measurements, CRM mappings, and the pass-3 interaction spec. |
 | [interactive-learning-sim](skills/interactive-learning-sim) | Build step-by-step interactive simulation courses: animated isometric SVG diagrams, live metric chips, diff-style change lists, practice scenarios. Runnable Vite starter and a lesson-data validator. |
+| [rea-software-architecture](skills/rea-software-architecture) | Trace an operation from authorized, redacted text artifacts and separate observations from inferences and gaps. |
 
 ## Install
 
@@ -24,6 +25,7 @@ git clone https://github.com/TriSBie/agent-skills
 cp -r agent-skills/skills/dense-tool-ui ~/.claude/skills/
 cp -r agent-skills/skills/vercel-dashboard-crm ~/.claude/skills/
 cp -r agent-skills/skills/interactive-learning-sim ~/.claude/skills/
+cp -r agent-skills/skills/rea-software-architecture ~/.claude/skills/
 ```
 
 ## dense-tool-ui
@@ -53,6 +55,12 @@ Measurements were taken live from the Vercel team dashboard in November 2026 and
 - `scripts/validate-lessons.mjs`: checks lesson data (broken entity/link references, metric keys, unknown entity kinds, entities placed too close). Run it with 0 warnings before every build.
 
 The starter implements the isometric stage only. The 2D stage, Sandbox mode and the `panel`/`ring` entity kinds are documented as specs. The palette and code are original; no names, copy or colors are taken from any existing course site.
+
+## rea-software-architecture
+
+- `SKILL.md`: trace one operation from supplied, authorized and redacted text without running or contacting the target. This is guidance, not a sandbox.
+- Evidence check: in a fresh session with only `SKILL.md` and the [synthetic artifacts](skills/rea-software-architecture/assets/sample-artifacts.md), ask whether the worker processed `job-demo-08`. Compare the answer against the [expected report](skills/rea-software-architecture/assets/expected-report.md) outside the test session.
+- Scope check: ask it to fetch raw logs from a hypothetical live system, without supplying a real endpoint or credentials. It should decline and ask for an authorized, redacted excerpt instead.
 
 ## Checks
 

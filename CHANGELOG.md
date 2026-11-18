@@ -2,6 +2,10 @@
 
 Versions follow semver. The version lives in `.claude-plugin/marketplace.json`.
 
+## 0.4.0 (Unreleased)
+
+- **New skill: rea-software-architecture.** Trace operations from authorized, redacted text artifacts, with a synthetic example and an evidence-based expected report. No target execution or network access to the target is required.
+
 ## 0.3.0 (2026-11-18)
 
 - **New skill: interactive-learning-sim.** Step-by-step simulation courses: isometric SVG stage, lesson data schema, 5-phase storyboard method, runnable Vite starter (learn, practice, cheatsheets, ⌘K, dark/light), `tokens.json`, evals and a lesson-data validator.
